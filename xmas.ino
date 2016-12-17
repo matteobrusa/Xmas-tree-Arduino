@@ -33,58 +33,23 @@ uint8_t tic = 0, // every round this increments up to LEN
 uint32_t tictoctac = 0;
 
 
+uint8_t mix = 64 + random(128);
+uint8_t fxCount = sizeof(fxs) / sizeof(Fx);
 
-
-
+Fx *fx1, *fx2;
 
 void setup() {
   pixels.begin();
   pixels.setBrightness(BRIGHTNESS);
 }
 
+void doPixels() {
 
-
-
-
-
-
-void doPixel(Fx fx1, Fx fx2, uint8_t pos) {
-
-  rgb_t c1, c2, c;
-  c1.word = fx1.pixel(pos);
-  c2.word = fx2.pixel(pos);
-
-  uint16_t n = MIX, m = 255 - n;
-  uint32_t ch;
-
-  for (int i = 0; i < 3; i++) {
-    ch = (c1.byte[i] * n + c2.byte[i] * m) >> 8;
-    if (ch > 255) ch = 255;
-    c.byte[i] = ch ;
-  }
-
-  pixels.setPixelColor(pos, c.word);
-}
-
-
-void loop() {
-
-  // keyframer
-
-  Fx fx1 = wave;
-  fx1.init();
-
-  Fx fx2 = plasma;
-  fx2.init();
-
-
-  fx1.iterate();
-  fx2.iterate();
-
-
+  fx1->iterate();
+  fx2->iterate();
 
   for (uint8_t pos = 0; pos < LEN; pos++) {
-    doPixel(fx1, fx2, pos);
+    doPixel( pos);
   }
 
   pixels.show();
@@ -103,91 +68,70 @@ void loop() {
       }
     }
   }
+}
 
-  /*
-    switch (mode) {
+void doPixel(uint8_t pos) {
 
-     // candle
-     case 1:
-       l = 0x0f0c04 * (5 + random(6));
-       m = 0x0f0c04 * random(6);
+  rgb_t c1, c2, c;
+  c1.word = fx1->pixel(pos);
+  c2.word = fx2->pixel(pos);
 
-       for (i = 0; i < 16; i++)
-         pixels.setPixelColor(i, l); // 0xffcc44
-       pixels.show();
-       delay(100 + random(400));
+  uint16_t n = mix, m = 255 - n;
+  uint32_t ch;
 
-       for (i = 0; i < 16; i++)
-         pixels.setPixelColor(i, (m + l) / 2);
-       pixels.show();
-       delay(10);
+  for (int i = 0; i < 3; i++) {
+    ch = (c1.byte[i] * n + c2.byte[i] * m) >> 8;
+    if (ch > 255) ch = 255;
+    c.byte[i] = ch ;
+  }
 
-       for (i = 0; i < 16; i++)
-         pixels.setPixelColor(i, m);
-       pixels.show();
-       delay(random(16)*random(6));
-
-       wait = 0;
-       duration = 1;
-       offset += 7;
-       break;
-
-     // random
-     case 4:
-       l = random(16 * 16 * 16);
-
-       x = l & 15;
-       l = l >> 4;
-       y = l & 15;
-       l = l >> 4;
-       z = l & 15;
-
-       pixels.setPixelColor(x, 0xffddaa);
-       pixels.setPixelColor(y, 0xffddaa);
-       pixels.setPixelColor(z, 0xffddaa);
-
-       pixels.show();
-       delay(20);
-       pixels.setPixelColor(x, 0);
-       pixels.setPixelColor(y, 0);
-       pixels.setPixelColor(z, 0);
-
-       wait = 0;
-       duration = 3;
-       break;
-
-     // plasma
-     case 2:
-       doPlasma();
-       break;
-
-     // glow
-     case 3:
-       doGlow();
-       break;
-
-     // alpha-omega
-     case 5:
-       for (i = 0; i < 16; i++) {
-         pixels.setPixelColor((i + (offset / 16)) % 16, hueToColor(i < 8 ? offset : offset + 128, 255));
-       }
-       wait = 1;
-       duration = 4;
-       break;
-
-    // rainbow
-     case 6:
-       for (i = 0; i < 16; i++) {
-         pixels.setPixelColor(i, hueToColor(offset, 255));
-       }
-       wait = 2;
-       duration = 5;
-       break;
-    }
-  */
-
-
+  pixels.setPixelColor(pos, c.word);
 }
 
 
+Fx* randomFx(Fx* diff) {
+  Fx* fx;
+  do {
+    fx = &fxs[ random(fxCount) ];
+  }
+  while ( fx == diff );
 
+  return fx;
+}
+
+
+void loop() {
+
+  Fx* fx1 = &wave;
+  fx1->init();
+
+  Fx* fx2 = &plasma;
+  fx2->init();
+
+  mix = 128;
+
+  while (true) {
+
+    // fade to f2
+    for (; mix < 255; mix++) {
+      doPixels();
+    }
+
+    // get new fx
+    fx1 = fx2;
+    mix = 255;
+    fx2 = randomFx(fx1);
+
+    // fade to mix
+    uint32_t n = 64 + random(128);
+    for (; mix != n; mix--) {
+      doPixels();
+    }
+
+    // enjoy
+    n = 100000 + random(200);
+    for (uint8_t i; i < n; i++) {
+      doPixels();
+    }
+  }
+}
