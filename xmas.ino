@@ -32,16 +32,29 @@ uint8_t tic = 0, // every round this increments up to LEN
         tac = 0;
 uint32_t tictoctac = 0;
 
-
-uint8_t mix = 64 + random(128);
-uint8_t fxCount = sizeof(fxs) / sizeof(Fx);
-
 Fx *fx1, *fx2;
+
+uint8_t mix;
+
 
 void setup() {
   pixels.begin();
   pixels.setBrightness(BRIGHTNESS);
 }
+
+uint32_t fxCount = sizeof(fxs) / sizeof(fxs[0]);
+
+Fx* randomFx(Fx* diff) {
+  Fx* fx;
+  do {
+    fx = &fxs[ random(fxCount) ];
+  }
+  while ( fx == diff );
+
+  return fx;
+}
+
+
 
 void doPixels() {
 
@@ -49,7 +62,7 @@ void doPixels() {
   fx2->iterate();
 
   for (uint8_t pos = 0; pos < LEN; pos++) {
-    doPixel( pos);
+    doPixel(pos);
   }
 
   pixels.show();
@@ -70,6 +83,7 @@ void doPixels() {
   }
 }
 
+
 void doPixel(uint8_t pos) {
 
   rgb_t c1, c2, c;
@@ -89,23 +103,12 @@ void doPixel(uint8_t pos) {
 }
 
 
-Fx* randomFx(Fx* diff) {
-  Fx* fx;
-  do {
-    fx = &fxs[ random(fxCount) ];
-  }
-  while ( fx == diff );
-
-  return fx;
-}
-
-
 void loop() {
 
-  Fx* fx1 = &wave;
+  fx1 = &plasma;
   fx1->init();
 
-  Fx* fx2 = &plasma;
+  fx2 = &wave;
   fx2->init();
 
   mix = 128;
@@ -113,7 +116,7 @@ void loop() {
   while (true) {
 
     // fade to f2
-    for (; mix < 255; mix++) {
+    for (; mix > 0; mix--) {
       doPixels();
     }
 
@@ -123,15 +126,19 @@ void loop() {
     fx2 = randomFx(fx1);
 
     // fade to mix
-    uint32_t n = 64 + random(128);
+    uint32_t n = 64; // 64 + random(128);
     for (; mix != n; mix--) {
       doPixels();
     }
 
     // enjoy
-    n = 100000 + random(200);
+    n = 100 + random(200);
     for (uint8_t i; i < n; i++) {
       doPixels();
     }
+
   }
 }
+
+
+
