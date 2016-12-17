@@ -11,8 +11,6 @@ typedef struct {
 
 extern Fx flash, glow, runner, plasma, wave, counter;
 
-Fx fxs[]= {flash, glow, runner, plasma, wave};
-
 #define MIX 190
 
 #endif
