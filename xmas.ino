@@ -1,7 +1,3 @@
-// Low power NeoPixel earrings example.  Makes a nice blinky display
-// with just a few LEDs on at any time...uses MUCH less juice than
-// rainbow display!
-
 #include <Adafruit_NeoPixel.h>
 #include "effects.h"
 
@@ -13,9 +9,7 @@
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(LEN, PIN, NEO_RGB);
 
 #define BRIGHTNESS 255
-#define TEMPO 10
-
-#define FLASHINESS 4
+#define TEMPO 4
 
 union rgb_t {
   uint32_t word;
@@ -24,12 +18,10 @@ union rgb_t {
     uint8_t  b;
     uint8_t  g;
     uint8_t  r;
-  } ;
-} ;
+  };
+};
 
-uint8_t tic = 0, // every round this increments up to LEN
-        toc = 0, // every LEN rounds
-        tac = 0;
+
 uint32_t tictoctac = 0;
 
 Fx *fx1, *fx2;
@@ -54,8 +46,6 @@ Fx* randomFx(Fx* diff) {
   return fx;
 }
 
-
-
 void doPixels() {
 
   fx1->iterate();
@@ -69,34 +59,18 @@ void doPixels() {
   delay(TEMPO);
 
   tictoctac++;
-
-  if (++tic == LEN) {
-    tic = 0;
-
-    if (++toc == LEN) {
-      toc = 0;
-
-      if (++tac == LEN) {
-        tac = 0;
-      }
-    }
-  }
 }
 
-
+rgb_t c1, c2, c;
 void doPixel(uint8_t pos) {
 
-  rgb_t c1, c2, c;
   c1.word = fx1->pixel(pos);
   c2.word = fx2->pixel(pos);
 
   uint16_t n = mix, m = 255 - n;
-  uint32_t ch;
 
   for (int i = 0; i < 3; i++) {
-    ch = (c1.byte[i] * n + c2.byte[i] * m) >> 8;
-    if (ch > 255) ch = 255;
-    c.byte[i] = ch ;
+    c.byte[i] = (c1.byte[i] * n + c2.byte[i] * m) >> 8;
   }
 
   pixels.setPixelColor(pos, c.word);
@@ -105,13 +79,14 @@ void doPixel(uint8_t pos) {
 
 void loop() {
 
-  fx1 = &plasma;
+  fx1 = &rainbow;
   fx1->init();
 
   fx2 = &wave;
   fx2->init();
 
-  mix = 128;
+  mix = 255;
+
 
   while (true) {
 
@@ -126,14 +101,13 @@ void loop() {
     fx2 = randomFx(fx1);
 
     // fade to mix
-    uint32_t n = 64; // 64 + random(128);
-    for (; mix != n; mix--) {
+    uint8_t n = 64 + random(128);
+    for (; mix > n; mix--) {
       doPixels();
     }
 
     // enjoy
-    n = 100 + random(200);
-    for (uint8_t i; i < n; i++) {
+    for (uint8_t i; i < 100; i++) {
       doPixels();
     }
 

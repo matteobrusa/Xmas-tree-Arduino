@@ -17,12 +17,23 @@ uint32_t ramp(uint8_t n) {
   return n < 128 ? n : 255 - n ;
 }
 uint32_t ramp(uint32_t n, uint32_t len) {
+  n = n % len;
   if (n > len / 2)
     n =  len - n;
 
-  n = n * 255 / len;
-  
- // if (n > 255) n = 255;
+  n = n * 2 * 255 / len;
+
+  return n;
+}
+
+uint32_t r3(uint32_t n, uint32_t len) {
+  if (n > len / 3)
+    if (n < len * 2 / 3)
+      n =  len - n;
+    else
+      n = 0;
+
+  n = n * 3 * 255 / len;
   return n;
 }
 
@@ -62,6 +73,9 @@ uint32_t adjustBrightness(uint32_t color, uint8_t b) {
 
   return res.word;
 }
+
+
+#
 
 uint32_t getRandomColor(uint8_t minBrightness) {
 

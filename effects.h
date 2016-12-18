@@ -9,10 +9,8 @@ typedef struct {
 
 } Fx;
 
-extern Fx flash, glow, runner, plasma, wave, counter;
+extern Fx flash, glow, runner, plasma, wave, counter, rainbow;
 
-Fx fxs[]= {flash, glow, runner, plasma, wave};
-
-#define MIX 190
+Fx fxs[]= {flash, rainbow, plasma, wave};
 
 #endif
