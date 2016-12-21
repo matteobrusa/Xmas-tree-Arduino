@@ -38,7 +38,7 @@ void dummy() {
     Glow
 */
 #define GLOW_LEN 50;
- 
+
 void iterateRainbow() {
 }
 
@@ -69,13 +69,13 @@ uint32_t pixelRainbow(uint8_t pos) {
 uint8_t flashiness;
 
 void initFlash() {
-  flashiness = random(2, 9);
+  flashiness = random(0, 3);
 }
 uint32_t pixelFlash(uint8_t pos) {
 
   if ( random(flashiness) == 0) {
     if ( pos == random(LEN))
-      return   0xFFddaa ;
+      return   0xaa6622 ;
   }
   return 0;
 }
@@ -107,7 +107,9 @@ void iteratePlasma() {
 
   if (plasmaProgress == 0) {
     plasmaFrom = plasmaTo;
-    plasmaTo.word = adjustBrightness(getRandomColor(20), 128);
+    plasmaTo.word = adjustBrightness(getRandomColor(20), 64);
+
+    plasmaTo.r += 30;
   }
 
   for (uint8_t i = 0; i < 3; i++) {
@@ -149,5 +151,5 @@ uint32_t pixelWave(uint8_t pos) {
 }
 
 
- 
+
 

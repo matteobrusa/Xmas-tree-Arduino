@@ -79,13 +79,16 @@ void doPixel(uint8_t pos) {
 
 void loop() {
 
-  fx1 = &rainbow;
+  fx1 = &flash;
   fx1->init();
 
-  fx2 = &wave;
+  fx2 = &plasma;
   fx2->init();
 
-  mix = 255;
+  mix = 128;
+//  while (true) {
+//    doPixels();
+//  }
 
 
   while (true) {
