@@ -9,7 +9,7 @@
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(LEN, PIN, NEO_RGB);
 
 #define BRIGHTNESS 255
-#define TEMPO 4
+#define TEMPO 7
 
 union rgb_t {
   uint32_t word;
@@ -33,13 +33,12 @@ void setup() {
   pixels.begin();
   pixels.setBrightness(BRIGHTNESS);
 }
-
-uint32_t fxCount = sizeof(fxs) / sizeof(fxs[0]);
+ 
 
 Fx* randomFx(Fx* diff) {
   Fx* fx;
   do {
-    fx = &fxs[ random(fxCount) ];
+    fx = &fxs[ random(5) ];
   }
   while ( fx == diff );
 
@@ -67,7 +66,7 @@ void doPixel(uint8_t pos) {
   c1.word = fx1->pixel(pos);
   c2.word = fx2->pixel(pos);
 
-  uint16_t n = mix, m = 255 - n;
+  uint8_t n = mix, m = 255 - n;
 
   for (int i = 0; i < 3; i++) {
     c.byte[i] = (c1.byte[i] * n + c2.byte[i] * m) >> 8;
@@ -79,10 +78,10 @@ void doPixel(uint8_t pos) {
 
 void loop() {
 
-  fx1 = &flash;
+  fx1 = &wave;
   fx1->init();
 
-  fx2 = &plasma;
+  fx2 = &rainbow;
   fx2->init();
 
   mix = 128;

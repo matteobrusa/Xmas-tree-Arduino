@@ -16,17 +16,18 @@ uint32_t hut(uint8_t n) {
 uint32_t ramp(uint8_t n) {
   return n < 128 ? n : 255 - n ;
 }
-uint32_t ramp(uint32_t n, uint32_t len) {
+uint8_t ramp(uint16_t n, uint16_t len) {
   n = n % len;
   if (n > len / 2)
     n =  len - n;
 
-  n = n * 2 * 255 / len;
+  //n = n * 2 * 255 / len;
+  n = ((n << 9) - n - n ) / len;
 
   return n;
 }
 
-uint32_t r3(uint32_t n, uint32_t len) {
+uint32_t r3(uint16_t n, uint16_t len) {
   if (n > len / 3)
     if (n < len * 2 / 3)
       n =  len - n;
@@ -69,7 +70,7 @@ uint32_t adjustBrightness(uint32_t color, uint8_t b) {
   res.word = color;
 
   for (uint8_t i = 0; i < 3; i++)
-    res.byte[i] = res.byte[i] * b / 255;
+    res.byte[i] = (res.byte[i] * b) >> 8;
 
   return res.word;
 }
@@ -80,12 +81,13 @@ uint32_t adjustBrightness(uint32_t color, uint8_t b) {
 uint32_t getRandomColor(uint8_t minBrightness) {
 
   rgb_t res;
+  uint8_t mb3 = minBrightness + minBrightness + minBrightness;
 
   do {
     res.r = random (255);
     res.g = random (255);
     res.b = random (255);
-  } while ( (res.r + res.g + res.b) < minBrightness * 3 );
+  } while ( (res.r + res.g + res.b) < mb3);
 
   return res.word;
 }

@@ -11,6 +11,6 @@ typedef struct {
 
 extern Fx flash, glow, runner, plasma, wave, counter, rainbow;
 
-Fx fxs[]= {flash, rainbow, plasma, wave};
+Fx fxs[]= {flash, rainbow, plasma, wave, rainbow};
 
 #endif

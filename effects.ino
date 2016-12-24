@@ -37,7 +37,7 @@ void dummy() {
 /*
     Glow
 */
-#define GLOW_LEN 50;
+#define GLOW_LEN 150;
 
 void iterateRainbow() {
 }
@@ -46,7 +46,7 @@ uint32_t pixelRainbow(uint8_t pos) {
 
   rgb_t res;
 
-  uint16_t offset = pos * 3 + tictoctac;
+  uint16_t offset = pos + pos + pos + tictoctac;
   uint8_t wavelen = 14 + (pos << 3) % GLOW_LEN;
 
   res.r = (255 + ramp(offset , wavelen)) >> 1;
@@ -84,7 +84,7 @@ uint32_t pixelFlash(uint8_t pos) {
    Runner
 */
 uint32_t pixelRunner(uint8_t pos) {
-  if (pos % (LEN / 2) == (tictoctac / 4) %  ( LEN / 2))
+  if (pos % (LEN / 2) == (tictoctac >> 2) %  ( LEN / 2))
     return 0xffddaa ;
   return 0;
 }
@@ -126,13 +126,13 @@ uint32_t pixelPlasma(uint8_t pos) {
    Wave of colors
 */
 
-uint32_t waveOffset;
+uint8_t waveOffset;
 uint8_t waveSpeed;
-uint16_t waveLen;
+uint8_t waveLen;
 
 void initWave() {
-  waveSpeed =  random(2, 4);
-  waveLen = waveSpeed * LEN;
+  waveSpeed =  random(4, 6);
+  waveLen = waveSpeed * LEN; // less than 200
 }
 void iterateWave() {
 
@@ -142,7 +142,7 @@ void iterateWave() {
 
 uint32_t pixelWave(uint8_t pos) {
 
-  uint32_t p = pos * waveSpeed + waveOffset;
+  uint16_t p = pos * waveSpeed + waveOffset;
   p = p % waveLen;
   uint8_t n = r3(p, waveLen);
 
