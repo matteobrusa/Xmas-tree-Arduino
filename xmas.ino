@@ -33,14 +33,17 @@ void setup() {
   pixels.begin();
   pixels.setBrightness(BRIGHTNESS);
 }
- 
 
+uint8_t fxindex = 0;
 Fx* randomFx(Fx* diff) {
+
   Fx* fx;
+
   do {
-    fx = &fxs[ random(5) ];
+    fxindex = fxindex + random(100);
+    fx = &fxs[ fxindex % FXNUM ];
   }
-  while ( fx == diff );
+  while (fx == diff);
 
   return fx;
 }
@@ -81,13 +84,12 @@ void loop() {
   fx1 = &wave;
   fx1->init();
 
-  fx2 = &rainbow;
+  fx2 = &plasma;
   fx2->init();
 
   mix = 128;
-//  while (true) {
-//    doPixels();
-//  }
+  // while (true) doPixels();
+
 
 
   while (true) {
